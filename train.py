@@ -14,11 +14,11 @@ import json
 from options.train_options import TrainOptions
 opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
 
-train_img_dir = '/home/crow/data/datasets/saliency_Dataset/DUT-train/images'
-train_gt_dir = '/home/crow/data/datasets/saliency_Dataset/DUT-train/masks'
+train_img_dir = '/home/zeng/data/datasets/saliency_Dataset/DUT-train/images'
+train_gt_dir = '/home/zeng/data/datasets/saliency_Dataset/DUT-train/masks'
 
-val_img_dir = '/home/crow/data/datasets/saliency_Dataset/ECSSD/images'
-val_gt_dir = '/home/crow/data/datasets/saliency_Dataset/ECSSD/masks'
+val_img_dir = '/home/zeng/data/datasets/saliency_Dataset/ECSSD/images'
+val_gt_dir = '/home/zeng/data/datasets/saliency_Dataset/ECSSD/masks'
 
 
 train_loader = torch.utils.data.DataLoader(

@@ -1,4 +1,5 @@
 import argparse
+import pdb
 import os
 
 
@@ -11,10 +12,9 @@ class _BaseOptions:
 
     def initialize(self):
         # self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
-        self.parser.add_argument('--batchSize', type=int, default=24, help='input batch size')
+        self.parser.add_argument('--batchSize', type=int, default=2, help='input batch size')
         self.parser.add_argument('--imageSize', type=int, default=256, help='input image size')
         self.parser.add_argument('--input_nc', type=int, default=3, help='input image channel')
-        self.parser.add_argument('--gpu_ids', type=str, default='0,1', help='gpu ids: e.g. 0  0,1,2, 0,2')
         self.parser.add_argument('--name', type=str, default='test_local', help='name of the experiment. It decides where to store samples and models')
         self.parser.add_argument('--model', type=str, default='DeepLab',
                                  help='chooses which model to use. FCN, DeepLab, etc')
@@ -34,12 +34,6 @@ class _BaseOptions:
         self.opt.mean = self.mean
         self.opt.std = self.std
 
-        str_ids = self.opt.gpu_ids.split(',')
-        self.opt.gpu_ids = []
-        for str_id in str_ids:
-            id = int(str_id)
-            if id >= 0:
-                self.opt.gpu_ids.append(id)
 
         args = vars(self.opt)
 
