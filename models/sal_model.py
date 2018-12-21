@@ -14,6 +14,7 @@ from tensorboardX import SummaryWriter
 from datetime import datetime
 from fcn import FCN
 from deeplab import DeepLab
+import pdb
 
 thismodule = sys.modules[__name__]
 
@@ -24,11 +25,14 @@ class SalModel(_BaseModel):
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
-        net = getattr(thismodule, opt.model)(pretrained=(not opt.from_scratch),
+        net = getattr(thismodule, opt.model)(pretrained=opt.isTrain and (not opt.from_scratch),
                                                       c_output=1,
                                                       base=opt.base)
         net = torch.nn.parallel.DataParallel(net, device_ids = opt.gpu_ids)
         self.net = net.cuda()
+
+        self.input = self.Tensor(opt.batchSize, opt.input_nc,
+                                 opt.imageSize, opt.imageSize)
 
         if opt.phase is 'test':
             pass
@@ -37,8 +41,6 @@ class SalModel(_BaseModel):
             # model.load_state_dict(model_parameters)
         else:
             self.criterion = nn.BCEWithLogitsLoss()
-            self.input = self.Tensor(opt.batchSize, opt.input_nc,
-                                     opt.imageSize, opt.imageSize)
             self.optimizer = torch.optim.Adam(self.net.parameters(),
                                                 lr=opt.lr, betas=(opt.beta1, 0.999))
 

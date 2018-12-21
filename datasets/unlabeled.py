@@ -5,22 +5,18 @@ import torch
 from torch.utils import data
 import pdb
 import random
+from base_data import _BaseData
 
 
-class ImageFiles(data.Dataset):
-    def __init__(self, root, crop=None, flip=False,
-                 size = 256,
-                 mean=None, std=None, training=False):
-        super(ImageFiles, self).__init__()
-        self.training = training
-        self.mean, self.std = mean, std
-        self.flip = flip
-        self.crop = crop
+class ImageFiles(_BaseData):
+    def __init__(self, img_dir, size=256, trining=True,
+                 crop=None, rotate=None, flip=False, mean=None, std=None):
+        super(ImageFiles, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
         self.size = size
-        self.root = root
-        names = os.listdir(root)
-        self.img_filenames = list(map(lambda x: os.path.join(root, x), names))
-        names = list(map(lambda x: x.split('.')[0], names))
+        self.training = trining
+        names = os.listdir(img_dir)
+        self.img_filenames = list(map(lambda x: os.path.join(img_dir, x), names))
+        names = list(map(lambda x: '.'.join(x.split('.')[:-1]), names))
         self.names = names
 
     def __len__(self):
@@ -29,27 +25,22 @@ class ImageFiles(data.Dataset):
     def __getitem__(self, index):
         # load image
         img_file = self.img_filenames[index]
-        img = Image.open(img_file)
         name = self.names[index]
-        if self.crop is not None:
-            # random crop size of crop
-            w, h = img.size
-            th, tw = int(self.crop*h), int(self.crop*w)
-            if w == tw and h == th:
-                return 0, 0, h, w
-            i = random.randint(0, h - th)
-            j = random.randint(0, w - tw)
-            img = img.crop((j, i, j + tw, i + th))
+        img = Image.open(img_file)
         WW, HH = img.size
+        if self.crop is not None:
+            img = self.random_crop(img)
+        if self.rotate is not None:
+            img = self.random_rotate(img)
+        if self.flip:
+            img = self.random_flip(img)
         img = img.resize((self.size, self.size))
-        img = np.array(img, dtype=np.uint8)
+
+        img = np.array(img, dtype=np.float64) / 255.0
         if len(img.shape) < 3:
             img = np.stack((img, img, img), 2)
         if img.shape[2] > 3:
             img = img[:, :, :3]
-        if self.flip and random.randint(0, 1):
-            img = img[:, ::-1].copy()
-        img = img.astype(np.float64) / 255
         if self.mean is not None:
             img -= self.mean
         if self.std is not None:
