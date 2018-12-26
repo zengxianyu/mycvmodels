@@ -89,7 +89,6 @@ class DepthLoss(nn.Module):
 class DepthModel(_BaseModel):
     def __init__(self, opt):
         _BaseModel.initialize(self, opt)
-        self.performance = {}
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]

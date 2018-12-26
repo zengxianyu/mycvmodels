@@ -14,6 +14,7 @@ class _BaseModel:
         self.isTrain = opt.isTrain
         self.Tensor = torch.cuda.FloatTensor
         self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
+        self.performance = {}
 
         # tensorboard
         if not os.path.exists(self.save_dir+'/runs'):

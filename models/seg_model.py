@@ -17,18 +17,19 @@ from fcn import FCN
 from deeplab import DeepLab
 from unet import UNet
 import pdb
+from datasets.voc import index2color, palette
 
 thismodule = sys.modules[__name__]
 
 
-class SalModel(_BaseModel):
-    def __init__(self, opt):
+class SegModel(_BaseModel):
+    def __init__(self, opt, c_output):
         _BaseModel.initialize(self, opt)
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
         net = getattr(thismodule, opt.model)(pretrained=opt.isTrain and (not opt.from_scratch),
-                                                      c_output=1,
+                                                      c_output=c_output,
                                                       base=opt.base)
 
         net = torch.nn.parallel.DataParallel(net)
@@ -43,7 +44,7 @@ class SalModel(_BaseModel):
             # model_parameters = self.load_network(model, 'G', 'best_vanila')
             # model.load_state_dict(model_parameters)
         else:
-            self.criterion = nn.BCEWithLogitsLoss()
+            self.criterion = nn.CrossEntropyLoss()
             self.optimizer = torch.optim.Adam(self.net.parameters(),
                                                 lr=opt.lr, betas=(opt.beta1, 0.999))
 
@@ -54,13 +55,22 @@ class SalModel(_BaseModel):
         print('loading %s'%label)
         self.load_network(self.net, self.name, label, self.gpu_ids)
 
+    def show_tensorboard_eval(self, num_iter):
+        for k, v in self.performance.items():
+            self.writer.add_scalar(k, v, num_iter)
+
     def show_tensorboard(self, num_iter, num_show=4):
         self.writer.add_scalar('loss', self.loss, num_iter)
         num_show = num_show if self.input.size(0) > num_show else self.input.size(0)
 
-        pred = F.sigmoid(self.prediction[:num_show])
-        pred = pred[:, None, ...]
-        self.writer.add_image('prediction', torchvision.utils.make_grid(pred.expand(-1, 3, -1, -1)).detach(), num_iter)
+        _, pred_index = self.prediction[:num_show].detach().cpu().max(1)
+        msk = torch.Tensor(num_show, 256, 256, 3)
+        for j, color in enumerate(index2color):
+            if (pred_index == j).sum() > 0:
+                msk[pred_index == j, :] = torch.Tensor(color)
+        msk = torch.transpose(msk, 2, 3)
+        msk = torch.transpose(msk, 1, 2)
+        self.writer.add_image('prediction', torchvision.utils.make_grid(msk / 255), num_iter)
 
         img = self.input[:num_show]*self.v_std + self.v_mean
         self.writer.add_image('image', torchvision.utils.make_grid(img), num_iter)
@@ -82,10 +92,12 @@ class SalModel(_BaseModel):
         self.set_input(input)
         with torch.no_grad():
             self.forward()
-            outputs = F.sigmoid(self.prediction)
-        outputs = outputs.detach().cpu().numpy() * 255
+            _, outputs = self.prediction.max(1)
+        outputs = outputs.detach().cpu().numpy()
         for ii, msk in enumerate(outputs):
             msk = Image.fromarray(msk.astype(np.uint8))
+            msk = msk.convert('P')
+            msk.putpalette(palette)
             msk = msk.resize((WW[ii], HH[ii]))
             msk.save('{}/{}.png'.format(self.opt.results_dir, name[ii]), 'PNG')
 

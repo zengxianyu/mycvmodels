@@ -96,9 +96,9 @@ def evaluate(pred_dir, gt_dir, num_class):
     for i, _iou in enumerate(iou):
         print('class [{}], IoU: {}'.format(i, _iou))
 
-    print('[Eval Summary]:')
-    print('Mean IoU: {:.4}, Accuracy: {:.2f}%'
-          .format(iou.mean(), acc_meter.average() * 100))
+    # print('[Eval Summary]:')
+    # print('Mean IoU: {:.4}, Accuracy: {:.2f}%'
+    #       .format(iou.mean(), acc_meter.average() * 100))
     return iou.mean(), acc_meter.average()
 
 
