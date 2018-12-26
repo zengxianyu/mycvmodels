@@ -15,6 +15,7 @@ class _BaseModel:
         self.Tensor = torch.cuda.FloatTensor
         self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
         self.performance = {}
+        self.gpu_ids = opt.gpu_ids
 
         # tensorboard
         if not os.path.exists(self.save_dir+'/runs'):

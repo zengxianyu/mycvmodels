@@ -2,7 +2,9 @@
 from base_options import _BaseOptions
 import os
 
+
 class TrainOptions(_BaseOptions):
+
     def initialize(self):
         _BaseOptions.initialize(self)
         self.parser.add_argument('--start_it', type=int, default=0, help='recover from saved')

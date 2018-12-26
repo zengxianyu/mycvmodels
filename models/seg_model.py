@@ -23,7 +23,7 @@ thismodule = sys.modules[__name__]
 
 
 class SegModel(_BaseModel):
-    def __init__(self, opt, c_output):
+    def __init__(self, opt, c_output, ignored_idx):
         _BaseModel.initialize(self, opt)
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
@@ -44,7 +44,7 @@ class SegModel(_BaseModel):
             # model_parameters = self.load_network(model, 'G', 'best_vanila')
             # model.load_state_dict(model_parameters)
         else:
-            self.criterion = nn.CrossEntropyLoss()
+            self.criterion = nn.CrossEntropyLoss(ignore_index=ignored_idx)
             self.optimizer = torch.optim.Adam(self.net.parameters(),
                                                 lr=opt.lr, betas=(opt.beta1, 0.999))
 
@@ -80,6 +80,7 @@ class SegModel(_BaseModel):
         self.targets = targets
         if targets is not None:
             self.targets = self.targets.cuda()
+
 
 
     def forward(self):

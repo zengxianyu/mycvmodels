@@ -53,7 +53,7 @@ def test(model):
     return miou
 
 
-model = SegModel(opt, c_output)
+model = SegModel(opt, c_output, train_loader.dataset.ignored_idx)
 
 
 def train(model):

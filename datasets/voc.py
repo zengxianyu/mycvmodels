@@ -56,6 +56,7 @@ class _BaseVOC(_BaseData):
     def __init__(self, img_dir, gt_dir, split_file, img_format='jpg', gt_format='png', size=256, training=True,
                  crop=None, rotate=None, flip=False, mean=None, std=None):
         super(_BaseVOC, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
+        self.ignored_idx = 255
         self.training = training
         self.size = size
         self.mean, self.std = mean, std
@@ -104,7 +105,6 @@ class VOC(_BaseVOC):
         if img.shape[2] > 3:
             img = img[:, :, :3]
         gt = np.array(gt, dtype=np.int64)
-        gt[gt==255] = -1
         if self.mean is not None:
             img -= self.mean
         if self.std is not None:
