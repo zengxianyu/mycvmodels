@@ -15,7 +15,6 @@ import os
 from options.train_options import TrainOptions
 opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
 
-
 home = os.path.expanduser("~")
 
 train_img_dir = '%s/data/datasets/saliency_Dataset/DUT-train/images'%home

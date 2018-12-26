@@ -1,4 +1,5 @@
 # coding=utf-8
+import pdb
 import numpy as np
 import torch
 import torch.nn as nn
@@ -28,7 +29,8 @@ class SalModel(_BaseModel):
         net = getattr(thismodule, opt.model)(pretrained=opt.isTrain and (not opt.from_scratch),
                                                       c_output=1,
                                                       base=opt.base)
-        net = torch.nn.parallel.DataParallel(net, device_ids = opt.gpu_ids)
+
+        net = torch.nn.parallel.DataParallel(net)
         self.net = net.cuda()
 
         self.input = self.Tensor(opt.batchSize, opt.input_nc,
