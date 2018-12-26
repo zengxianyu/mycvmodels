@@ -44,16 +44,16 @@ def densenet121(pretrained=False, **kwargs):
         model.load_state_dict(state_dict)
     model.classifier = None
     features = model.features
-    features.block0 = nn.Sequential(features.conv0, features.norm0, features.relu0)
+    features.block0 = nn.Sequential(features.conv0, features.norm0, features.relu0, features.pool0)
 
     features.denseblock1 = nn.Sequential(*list(features.denseblock1))
-    features.transition1 = nn.Sequential(*list(features.transition1)[:-1])
+    features.transition1 = nn.Sequential(*list(features.transition1))
 
     features.denseblock2 = nn.Sequential(*list(features.denseblock2))
-    features.transition2 = nn.Sequential(*list(features.transition2)[:-1])
+    features.transition2 = nn.Sequential(*list(features.transition2))
 
     features.denseblock3 = nn.Sequential(*list(features.denseblock3))
-    features.transition3 = nn.Sequential(*list(features.transition3)[:-1])
+    features.transition3 = nn.Sequential(*list(features.transition3))
 
     features.denseblock4 = nn.Sequential(*(list(features.denseblock4) + [features.norm5]))
     model.features = features
@@ -170,18 +170,18 @@ def densenet201(pretrained=False, **kwargs):
         model.load_state_dict(state_dict)
     model.classifier = None
     features = model.features
-    features.block0 = nn.Sequential(features.conv0, features.norm0, features.relu0)
+    features.block0 = nn.Sequential(features.conv0, features.norm0, features.relu0, features.pool0)
 
     features.denseblock1 = nn.Sequential(*list(features.denseblock1))
-    features.transition1 = nn.Sequential(*list(features.transition1)[:-1])
+    features.transition1 = nn.Sequential(*list(features.transition1))
 
     features.denseblock2 = nn.Sequential(*list(features.denseblock2))
-    features.transition2 = nn.Sequential(*list(features.transition2)[:-1])
+    features.transition2 = nn.Sequential(*list(features.transition2))
 
     features.denseblock3 = nn.Sequential(*list(features.denseblock3))
-    features.transition3 = nn.Sequential(*list(features.transition3)[:-1])
+    features.transition3 = nn.Sequential(*list(features.transition3))
 
-    features.denseblock4 = nn.Sequential(*(list(features.denseblock4)+[features.norm5]))
+    features.denseblock4 = nn.Sequential(*(list(features.denseblock4) + [features.norm5]))
     model.features = features
     return model
 

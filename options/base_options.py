@@ -11,13 +11,14 @@ class _BaseOptions:
 
     def initialize(self):
         # self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
-        self.parser.add_argument('--batchSize', type=int, default=26, help='input batch size')
+        self.parser.add_argument('--batchSize', type=int, default=80, help='input batch size')
         self.parser.add_argument('--imageSize', type=int, default=256, help='input image size')
         self.parser.add_argument('--input_nc', type=int, default=3, help='input image channel')
         self.parser.add_argument('--gpu_ids', type=str, default='0,1', help='gpu ids: e.g. 0  0,1,2, 0,2')
-        self.parser.add_argument('--name', type=str, default='nyu', help='name of the experiment. It decides where to store samples and models')
-        self.parser.add_argument('--model', type=str, default='DeepLab',
+        self.parser.add_argument('--name', type=str, default='pbr-mlt', help='name of the experiment. It decides where to store samples and models')
+        self.parser.add_argument('--model', type=str, default='UNet',
                                  help='chooses which model to use. FCN, DeepLab, etc')
+
         self.parser.add_argument('--base', type=str, default='densenet169',
                                  help='chooses which backbone network to use. densenet169, vgg16, etc')
         home = os.path.expanduser("~")
