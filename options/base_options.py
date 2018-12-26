@@ -18,14 +18,12 @@ class _BaseOptions:
         self.parser.add_argument('--name', type=str, default='pbr-mlt', help='name of the experiment. It decides where to store samples and models')
         self.parser.add_argument('--model', type=str, default='UNet',
                                  help='chooses which model to use. FCN, DeepLab, etc')
-
         self.parser.add_argument('--base', type=str, default='densenet169',
                                  help='chooses which backbone network to use. densenet169, vgg16, etc')
         home = os.path.expanduser("~")
         self.parser.add_argument('--checkpoints_dir', type=str, default='%s/segggFiles'%home, help='path to save params and tensorboard files')
         # self.parser.add_argument('--results_dir', type=str, default='../segggFiles/results', help='saves prediction results here.')
 
-        self.initialized = True
 
     def parse(self):
         if not self.initialized:

@@ -101,7 +101,7 @@ def vgg11(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[3:6]),
                  nn.Sequential(*list_feature[6:11]),
                  nn.Sequential(*list_feature[11:16]),
-                 nn.Sequential(*list_feature[16:21])]
+                 nn.Sequential(*list_feature[16:20])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -123,7 +123,7 @@ def vgg11_bn(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[4:8]),
                  nn.Sequential(*list_feature[8:15]),
                  nn.Sequential(*list_feature[15:22]),
-                 nn.Sequential(*list_feature[22:29])]
+                 nn.Sequential(*list_feature[22:28])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -145,7 +145,7 @@ def vgg13(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[5:10]),
                  nn.Sequential(*list_feature[10:15]),
                  nn.Sequential(*list_feature[15:20]),
-                 nn.Sequential(*list_feature[20:25])]
+                 nn.Sequential(*list_feature[20:24])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -167,7 +167,7 @@ def vgg13_bn(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[7:14]),
                  nn.Sequential(*list_feature[14:21]),
                  nn.Sequential(*list_feature[21:28]),
-                 nn.Sequential(*list_feature[28:35])]
+                 nn.Sequential(*list_feature[28:34])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -183,14 +183,14 @@ def vgg16(pretrained=False, **kwargs):
         kwargs['init_weights'] = False
     model = VGG(make_layers(cfg['D']), **kwargs)
     if pretrained:
-        # model.load_state_dict(model_zoo.load_url(model_urls['vgg16']))
-        model.load_state_dict(torch.load('/home/crow/SPN.pytorch/demo/models/vgg16_from_caffe.pth'))
+        model.load_state_dict(model_zoo.load_url(model_urls['vgg16']))
+        # model.load_state_dict(torch.load('/home/crow/SPN.pytorch/demo/models/vgg16_from_caffe.pth'))
     list_feature = list(model.features)
     _features = [nn.Sequential(*list_feature[:5]),
                  nn.Sequential(*list_feature[5:10]),
                  nn.Sequential(*list_feature[10:17]),
                  nn.Sequential(*list_feature[17:24]),
-                 nn.Sequential(*list_feature[24:31])]
+                 nn.Sequential(*list_feature[24:30])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -212,7 +212,7 @@ def vgg16_bn(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[7:14]),
                  nn.Sequential(*list_feature[14:24]),
                  nn.Sequential(*list_feature[24:34]),
-                 nn.Sequential(*list_feature[34:44])]
+                 nn.Sequential(*list_feature[34:43])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -234,7 +234,7 @@ def vgg19(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[5:10]),
                  nn.Sequential(*list_feature[10:19]),
                  nn.Sequential(*list_feature[19:28]),
-                 nn.Sequential(*list_feature[28:37])]
+                 nn.Sequential(*list_feature[28:36])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model
@@ -256,7 +256,7 @@ def vgg19_bn(pretrained=False, **kwargs):
                  nn.Sequential(*list_feature[7:14]),
                  nn.Sequential(*list_feature[14:27]),
                  nn.Sequential(*list_feature[27:40]),
-                 nn.Sequential(*list_feature[40:53])]
+                 nn.Sequential(*list_feature[40:52])]
     model.features = nn.ModuleList(_features)
     model.classifier = None
     return model

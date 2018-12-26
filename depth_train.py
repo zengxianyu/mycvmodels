@@ -20,15 +20,15 @@ opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
 # val_loader, val_gt_dir = pbr_val_loader()
 if 'mlt' in opt.name:
     print('train on pbr-mlt dataset')
-    train_loader = pbrmlt_train_loader()
-    val_loader, val_gt_dir = pbrmlt_val_loader()
+    train_loader = pbrmlt_train_loader(opt)
+    val_loader, val_gt_dir = pbrmlt_val_loader(opt)
 elif 'pbr' in opt.name:
     print('train on pbr-opengl dataset')
-    train_loader = pbr_train_loader()
-    val_loader, val_gt_dir = pbr_val_loader()
+    train_loader = pbr_train_loader(opt)
+    val_loader, val_gt_dir = pbr_val_loader(opt)
 elif 'nyu' in opt.name:
-    train_loader = nyu2_train_loader()
-    val_loader, val_gt_dir = nyu2_val_loader()
+    train_loader = nyu2_train_loader(opt)
+    val_loader, val_gt_dir = nyu2_val_loader(opt)
 
 
 def test(model):

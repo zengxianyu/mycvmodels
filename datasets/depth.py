@@ -70,7 +70,8 @@ class PBR(_BaseDepthData):
     def __init__(self, img_dir, gt_dir, split_file, img_format='jpg', gt_format='png', size=256, training=True,
                  crop=None, rotate=None, flip=False, mean=None, std=None, postfix='color'):
         super(PBR, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std, size=size, training=training)
-        folder_names = open(split_file, 'r').readlines()
+        with open(split_file, 'r') as f:
+            folder_names = f.readlines()
         folder_names = [n.strip('\n') for n in folder_names]
         names = ['{}/{}'.format(f, ('.'.join(n.split('.')[:-1])).split('_')[0])
                  for f in folder_names for n in os.listdir('{}/{}'.format(img_dir, f))]

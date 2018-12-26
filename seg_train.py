@@ -37,7 +37,7 @@ train_loader = torch.utils.data.DataLoader(
 
 val_loader = torch.utils.data.DataLoader(
     VOC(val_img_dir, val_gt_dir, val_split,
-           crop=0.9, flip=True, rotate=None, size=opt.imageSize,
+           crop=None, flip=False, rotate=None, size=opt.imageSize,
            mean=opt.mean, std=opt.std, training=False),
     batch_size=opt.batchSize, shuffle=True, num_workers=4, pin_memory=True)
 

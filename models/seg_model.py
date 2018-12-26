@@ -28,7 +28,9 @@ class SegModel(_BaseModel):
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
-        net = getattr(thismodule, opt.model)(pretrained=opt.isTrain and (not opt.from_scratch),
+        _pretrained = opt.isTrain and (not opt.from_scratch)
+        print('pretrained={}'.format(_pretrained))
+        net = getattr(thismodule, opt.model)(pretrained=_pretrained,
                                                       c_output=c_output,
                                                       base=opt.base)
 
@@ -46,7 +48,7 @@ class SegModel(_BaseModel):
         else:
             self.criterion = nn.CrossEntropyLoss(ignore_index=ignored_idx)
             self.optimizer = torch.optim.Adam(self.net.parameters(),
-                                                lr=opt.lr, betas=(opt.beta1, 0.999))
+                                                lr=opt.lr)
 
     def save(self, label):
         self.save_network(self.net, self.name, label, self.gpu_ids)
@@ -86,7 +88,6 @@ class SegModel(_BaseModel):
     def forward(self):
         # print("We are Forwarding !!")
         self.prediction = self.net.forward(self.input)
-        self.prediction = self.prediction.squeeze(1)
 
 
     def test(self, input, name, WW, HH):
