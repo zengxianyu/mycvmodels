@@ -15,16 +15,18 @@ import sys
 thismodule = sys.modules[__name__]
 import pdb
 
+dim_dict = {
+    'vgg16': [64, 128, 256, 512, 512],
+}
+
 
 class RPN(nn.Module):
-    def __init__(self, pretrained=True, base='densenet169'):
+    def __init__(self, pretrained=True, base='vgg16', c_hidden=512):
         super(RPN, self).__init__()
-        # self.upscales = nn.ModuleList([nn.ConvTranspose2d(ic, oc, 2, 2)
-        #                                for ic, oc in zip(dims[:-1], dims[1:])])
-        # self.reduce_convs = nn.ModuleList([nn.Conv2d(2*oc, oc, 3, 1, 1)
-        #                                    for oc in dims[1:]])
-        # self.output_convs = nn.Sequential(nn.Conv2d(dims[-1], c_output, 1, 1),
-        #                                   nn.ConvTranspose2d(c_output, c_output, 4, 2, 1))
+        dims = dim_dict[base][::-1]
+        self.input_conv = nn.Conv2d(dims[0], c_hidden, kernel_size=3, padding=1)
+        self.output_mask = nn.Conv2d(c_hidden, 18, kernel_size=1)
+        self.output_pos = nn.Conv2d(c_hidden, 36, kernel_size=1)
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear) or isinstance(m, nn.Linear):
                 m.weight.data.normal_(0.0, 0.01)
@@ -40,15 +42,11 @@ class RPN(nn.Module):
     def forward(self, x, boxes=None, ids=None):
         self.feature.feats[x.device.index] = []
         x = self.feature(x)
-        feats = self.feature.feats[x.device.index]
-        feats = feats[::-1]
-
-        for i, feat in enumerate(feats):
-            x = self.upscales[i](x)
-            x = torch.cat((feats[i], x), 1)
-            x = self.reduce_convs[i](x)
-        pred = self.output_convs(x)
-        return pred
+        x = self.input_conv(x)
+        bsize, _, fsize, _ = x.size()
+        pred_mask = self.output_mask(x)
+        pred_pos = self.output_pos(x)
+        return pred_mask.view(bsize, 2, 9, fsize, fsize), pred_pos.view(bsize, 4, 9, fsize, fsize)
 
 
 if __name__ == "__main__":

@@ -121,8 +121,9 @@ def hflip_img_boxes(img, boxes):
 
 
 class VOCDet(data.Dataset):
-    def __init__(self, img_dir, gt_dir, split_file, flip=True, crop=0.9, size=256, mean=None, std=None):
+    def __init__(self, img_dir, gt_dir, split_file, flip=True, crop=0.9, size=256, mean=None, std=None, training=True):
         super(VOCDet, self).__init__()
+        self.training = training
         self.crop = crop
         self.flip = flip
         self.size = size
@@ -168,10 +169,22 @@ class VOCDet(data.Dataset):
         # boxes = boxes[:, [1, 0, 3, 2]]  # ymin, xmin, ymax, xmax
         img = np.transpose(img, (2, 0, 1))
         img = torch.Tensor(img)
+        # remove invalid boxes
+        f = boxes[:, 2]-boxes[:, 0]
+        boxes = boxes[f>0]
+        f = boxes[:, 3]-boxes[:, 1]
+        boxes = boxes[f>0]
+
         boxes = torch.Tensor(boxes)
         labels = torch.LongTensor(labels)
         diffs = torch.LongTensor(diffs)
-        return img, boxes, labels, diffs
+        if self.training:
+            if len(boxes)==0:
+                return self.__getitem__(index+1)
+            else:
+                return img, boxes, labels, diffs
+        else:
+            return img
 
 
 if __name__ == "__main__":

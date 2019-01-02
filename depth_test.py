@@ -16,7 +16,7 @@ from options.test_options import TestOptions
 opt = TestOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
 
 # val_loader, val_gt_dir = pbr_val_loader()
-val_loader, val_gt_dir = nyu2_val_loader()
+val_loader, val_gt_dir = nyu2_val_loader(opt)
 
 model_label = '_best'
 

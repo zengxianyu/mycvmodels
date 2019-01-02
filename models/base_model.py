@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from tensorboardX import SummaryWriter
 from datetime import datetime
+import pdb
 
 
 class _BaseModel:
@@ -21,7 +22,7 @@ class _BaseModel:
         if not os.path.exists(self.save_dir+'/runs'):
             os.mkdir(self.save_dir+'/runs')
         os.system('rm -rf %s/runs/*'%self.save_dir)
-        self.writer = SummaryWriter('%s/runs/'%self.save_dir + datetime.now().strftime('%B%d  %H:%M:%S'))
+        self.writer = SummaryWriter('%s/runs/'%self.save_dir + datetime.now().strftime('%Y%m%d_%H:%M:%S'))
 
     def set_input(self, input):
         self.input = input

@@ -45,7 +45,7 @@ class SalModel(_BaseModel):
         else:
             self.criterion = nn.BCEWithLogitsLoss()
             self.optimizer = torch.optim.Adam(self.net.parameters(),
-                                                lr=opt.lr, betas=(opt.beta1, 0.999))
+                                                lr=opt.lr)
 
     def save(self, label):
         self.save_network(self.net, self.name, label, self.gpu_ids)

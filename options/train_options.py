@@ -14,8 +14,7 @@ class TrainOptions(_BaseOptions):
         self.parser.add_argument('--save_latest_freq', type=int, default=1000, help='frequency of saving the latest model')
         self.parser.add_argument('--train_iters', type=int, default=100000, help='training iterations')
         self.parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
-        self.parser.add_argument('--beta1', type=float, default=0.5, help='momentum term of adam')
-        self.parser.add_argument('--lr', type=float, default=0.0002, help='initial learning rate for adam')
+        self.parser.add_argument('--lr', type=float, default=1e-4, help='initial learning rate for adam')
         self.parser.add_argument('--from_scratch', action='store_true')
         self.initialized = True
 

@@ -81,6 +81,7 @@ def train(model):
         if i != 0 and i % opt.save_latest_freq == 0:
             model.save(i)
             miou = test(model)
+            model.show_tensorboard_eval(i)
             log[i] = {'miou': miou}
             if miou > log['best']:
                 log['best'] = miou
