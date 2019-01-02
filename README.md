@@ -1,5 +1,5 @@
 ## 代码
-saliency, semantic seg, depth, det
+saliency, semantic seg, depth, obj det
 
 模型：fcn, deeplab, unet, segnet, rpn
 
