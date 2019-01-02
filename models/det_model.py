@@ -5,18 +5,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
-import os
 from PIL import Image
-from torch.autograd import Variable
 from base_model import _BaseModel
 import sys
-# from evaluate_sal import fm_and_mae
-from tensorboardX import SummaryWriter
-from datetime import datetime
 from rpn import RPN
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import pdb
 
 thismodule = sys.modules[__name__]
@@ -131,7 +125,7 @@ class RPNLoss(nn.Module):
         maxiou = iou.max(0)  # 对于每个anchor，考虑和它重叠最大的gtbox和它的iou
         maxiou[idx_best_ans] = -1  # 最佳anchor已经找到了，要避免之后重复找它
         gt_ans = iou.argmax(0)  # 每个anchor对应的gtbox
-        gt_best_ans = gt_ans[idx_best_ans]
+        gt_best_ans = gt_ans[idx_best_ans]  # 最佳anchor对应的gtbox
         if len(idx_best_ans) < 128:
             idx_pos_ans = np.where(maxiou>self.pos_th)[0]  # positive anchor
             gt_pos_ans = gt_ans[idx_pos_ans]  # positive anchor对应的gtbox
@@ -169,14 +163,15 @@ class RPNLoss(nn.Module):
         anw = self.anw[mask_pos_ans]
         anh = self.anh[mask_pos_ans]
 
-        try:
-            tx = (gt_xct-an_xct)/anw
-        except ValueError:
-            pdb.set_trace()
+        # try:
+        #     tx = (gt_xct-an_xct)/anw
+        # except ValueError:
+        #     pdb.set_trace()
+        tx = (gt_xct-an_xct)/anw
         ty = (gt_yct-an_yct)/anh
 
-        assert (gtw<=0).sum()==0
-        assert (gth<=0).sum()==0
+        # assert (gtw<=0).sum()==0
+        # assert (gth<=0).sum()==0
 
         tw = np.log(gtw/anw)
         th = np.log(gth/anh)
