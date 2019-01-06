@@ -7,7 +7,7 @@ from collections import OrderedDict
 import re
 import pdb
 
-__all__ = ['DenseNet', 'densenet121', 'densenet169', 'densenet169_par', 'densenet201', 'densenet161']
+__all__ = ['DenseNet', 'densenet121', 'densenet169', 'densenet201', 'densenet161']
 
 
 model_urls = {
@@ -35,48 +35,6 @@ def densenet121(pretrained=False, **kwargs):
         pattern = re.compile(
             r'^(.*denselayer\d+\.(?:norm|relu|conv))\.((?:[12])\.(?:weight|bias|running_mean|running_var))$')
         state_dict = model_zoo.load_url(model_urls['densenet121'])
-        for key in list(state_dict.keys()):
-            res = pattern.match(key)
-            if res:
-                new_key = res.group(1) + res.group(2)
-                state_dict[new_key] = state_dict[key]
-                del state_dict[key]
-        model.load_state_dict(state_dict)
-    model.classifier = None
-    features = model.features
-    features.block0 = nn.Sequential(features.conv0, features.norm0, features.relu0, features.pool0)
-
-    features.denseblock1 = nn.Sequential(*list(features.denseblock1))
-    features.transition1 = nn.Sequential(*list(features.transition1))
-
-    features.denseblock2 = nn.Sequential(*list(features.denseblock2))
-    features.transition2 = nn.Sequential(*list(features.transition2))
-
-    features.denseblock3 = nn.Sequential(*list(features.denseblock3))
-    features.transition3 = nn.Sequential(*list(features.transition3))
-
-    features.denseblock4 = nn.Sequential(*(list(features.denseblock4) + [features.norm5]))
-    model.features = features
-    return model
-
-
-def densenet169_par(pretrained=False, **kwargs):
-    r"""Densenet-169 model from
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
-
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
-    model = DenseNetPar(num_init_features=64, growth_rate=32, block_config=(6, 12, 32, 32),
-                     **kwargs)
-    if pretrained:
-        # '.'s are no longer allowed in module names, but pervious _DenseLayer
-        # has keys 'norm.1', 'relu.1', 'conv.1', 'norm.2', 'relu.2', 'conv.2'.
-        # They are also in the checkpoints in model_urls. This pattern is used
-        # to find such keys.
-        pattern = re.compile(
-            r'^(.*denselayer\d+\.(?:norm|relu|conv))\.((?:[12])\.(?:weight|bias|running_mean|running_var))$')
-        state_dict = model_zoo.load_url(model_urls['densenet169'])
         for key in list(state_dict.keys()):
             res = pattern.match(key)
             if res:

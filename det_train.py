@@ -1,6 +1,6 @@
 # coding=utf-8
 
-import ipdb
+import pdb
 import time
 import torch
 import sys
@@ -71,8 +71,12 @@ def train(model):
         img, boxes, labels, diffs = train_iter.next()
         it += 1
 
-        model.set_input(img, boxes)
-        model.optimize_parameters()
+        model.set_input(img, boxes, labels)
+        # if i == 147:
+        #     dbg=True
+        # else:
+        #     dbg=False
+        model.optimize_parameters(False)
 
         if i % opt.display_freq == 0:
             model.show_tensorboard(i)

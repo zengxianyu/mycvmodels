@@ -1,7 +1,7 @@
 ## 代码
 saliency, semantic seg, depth, obj det
 
-模型：fcn, deeplab, unet, segnet, rpn
+模型：fcn, deeplab, unet, segnet, faster rcnn 
 
 ### 用法
 1. 修改相应文件比如train.py和xx_options.py
