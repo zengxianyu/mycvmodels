@@ -17,6 +17,7 @@ from crop_resize import CropResize
 import pdb
 
 thismodule = sys.modules[__name__]
+plt.switch_backend('agg')
 
 
 # def bbox_iou(box, gt_box):
