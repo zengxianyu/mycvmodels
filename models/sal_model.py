@@ -54,6 +54,10 @@ class SalModel(_BaseModel):
         print('loading %s'%label)
         self.load_network(self.net, self.name, label, self.gpu_ids)
 
+    def show_tensorboard_eval(self, num_iter):
+        for k, v in self.performance.items():
+            self.writer.add_scalar(k, v, num_iter)
+
     def show_tensorboard(self, num_iter, num_show=4):
         self.writer.add_scalar('loss', self.loss, num_iter)
         num_show = num_show if self.input.size(0) > num_show else self.input.size(0)
