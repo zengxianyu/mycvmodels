@@ -11,13 +11,10 @@ from resnet import *
 from vgg import *
 
 import numpy as np
+from dim_dict import dim_dict
 import sys
 thismodule = sys.modules[__name__]
 import pdb
-
-dim_dict = {
-    'densenet169': [64, 128, 256, 640, 1664],
-}
 
 
 def get_upsampling_weight(in_channels, out_channels, kernel_size):
@@ -42,10 +39,23 @@ def proc_densenet(model):
     model.features.transition2[-2].register_forward_hook(hook)
     model.features.transition1[-2].register_forward_hook(hook)
     model.features.block0[-2].register_forward_hook(hook)
+    model.classifier = None
     return model
 
 
-procs = {'densenet169': proc_densenet}
+def proc_vgg(model):
+    def hook(module, input, output):
+        model.feats[output.device.index] += [output]
+    model.features[3][-2].register_forward_hook(hook)
+    model.features[2][-2].register_forward_hook(hook)
+    model.features[1][-2].register_forward_hook(hook)
+    model.features[0][-2].register_forward_hook(hook)
+    model.classifier = None
+    return model
+
+
+procs = {'densenet169': proc_densenet,
+         'vgg16': proc_vgg}
 
 
 class UNet(nn.Module):
@@ -56,8 +66,11 @@ class UNet(nn.Module):
                                        for ic, oc in zip(dims[:-1], dims[1:])])
         self.reduce_convs = nn.ModuleList([nn.Conv2d(2*oc, oc, 3, 1, 1)
                                            for oc in dims[1:]])
-        self.output_convs = nn.Sequential(nn.Conv2d(dims[-1], c_output, 1, 1),
-                                          nn.ConvTranspose2d(c_output, c_output, 4, 2, 1))
+        if 'vgg' in base:
+            self.output_convs = nn.Conv2d(dims[-1], c_output, 1, 1)
+        else:
+            self.output_convs = nn.Sequential(nn.Conv2d(dims[-1], c_output, 1, 1),
+                                              nn.ConvTranspose2d(c_output, c_output, 4, 2, 1))
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear) or isinstance(m, nn.Linear):
                 m.weight.data.normal_(0.0, 0.01)

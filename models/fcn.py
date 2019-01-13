@@ -10,14 +10,12 @@ from densenet import *
 from resnet import *
 from vgg import *
 
+from dim_dict import dim_dict
+
 import numpy as np
 import sys
 thismodule = sys.modules[__name__]
 import pdb
-
-dim_dict = {
-    'densenet169': [64, 128, 256, 640, 1664],
-}
 
 
 def proc_densenet(model):
@@ -25,10 +23,21 @@ def proc_densenet(model):
         model.feats[output.device.index] += [output]
     model.features.transition3[-2].register_forward_hook(hook)
     model.features.transition2[-2].register_forward_hook(hook)
+    model.classifier = None
     return model
 
 
-procs = {'densenet169': proc_densenet}
+def proc_vgg(model):
+    def hook(module, input, output):
+        model.feats[output.device.index] += [output]
+    model.features[3][-2].register_forward_hook(hook)
+    model.features[2][-2].register_forward_hook(hook)
+    model.classifier = None
+    return model
+
+
+procs = {'densenet169': proc_densenet,
+         'vgg16': proc_vgg}
 
 
 def get_upsampling_weight(in_channels, out_channels, kernel_size):
@@ -52,11 +61,18 @@ class FCN(nn.Module):
         super(FCN, self).__init__()
         dims = dim_dict[base][::-1]
         self.preds = nn.ModuleList([nn.Conv2d(d, c_output, kernel_size=1) for d in dims])
-        self.upscales = nn.ModuleList([
-            nn.ConvTranspose2d(c_output, c_output, 4, 2, 1),
-            nn.ConvTranspose2d(c_output, c_output, 4, 2, 1),
-            nn.ConvTranspose2d(c_output, c_output, 16, 8, 4),
-        ])
+        if 'vgg' in base:
+            self.upscales = nn.ModuleList([
+                nn.ConvTranspose2d(c_output, c_output, 4, 2, 1),
+                nn.ConvTranspose2d(c_output, c_output, 4, 2, 1),
+                nn.ConvTranspose2d(c_output, c_output, 8, 4, 2),
+            ])
+        else:
+            self.upscales = nn.ModuleList([
+                nn.ConvTranspose2d(c_output, c_output, 4, 2, 1),
+                nn.ConvTranspose2d(c_output, c_output, 4, 2, 1),
+                nn.ConvTranspose2d(c_output, c_output, 16, 8, 4),
+            ])
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
                 m.weight.data.normal_(0.0, 0.01)
