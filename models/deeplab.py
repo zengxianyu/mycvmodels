@@ -5,6 +5,7 @@ from torch.autograd.variable import Variable
 from densenet import *
 from resnet import *
 from vgg import *
+from mobilenetv2 import *
 
 import numpy as np
 import sys
@@ -12,7 +13,6 @@ from dim_dict import dim_dict
 
 thismodule = sys.modules[__name__]
 import pdb
-
 
 
 def proc_densenet(model):
@@ -66,9 +66,40 @@ def proc_vgg(model):
     return model
 
 
+def proc_mobilenet2(model):
+    # dilation
+    def remove_sequential(all_layers, network):
+        for layer in network.children():
+            if isinstance(layer, nn.Sequential):  # if sequential layer, apply recursively to layers in sequential layer
+                remove_sequential(all_layers, layer)
+            if isinstance(layer, InvertedResidual):
+                remove_sequential(all_layers, layer.conv)
+            if list(layer.children()) == []:  # if leaf node, add it to list
+                all_layers.append(layer)
+
+    model.features[7].conv[3].stride = 1
+    all_layers = []
+    remove_sequential(all_layers, model.features[8:14])
+    for m in all_layers:
+        if isinstance(m, nn.Conv2d) and m.kernel_size == (3, 3):
+            m.dilation = (2, 2)
+            m.padding = (2, 2)
+
+    model.features[14].conv[3].stride = 1
+    all_layers = []
+    remove_sequential(all_layers, model.features[15:])
+    for m in all_layers:
+        if isinstance(m, nn.Conv2d) and m.kernel_size == (3, 3):
+            m.dilation = (4, 4)
+            m.padding = (4, 4)
+    model.classifier = None
+    return model
+
+
 procs = {
     'densenet169': proc_densenet,
     'vgg16': proc_vgg,
+    'mobilenet2': proc_mobilenet2,
 }
 
 
