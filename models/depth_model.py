@@ -15,6 +15,7 @@ from datetime import datetime
 from fcn import FCN
 from deeplab import DeepLab
 from unet import UNet
+from simpleconv import SimpConv
 import pdb
 
 thismodule = sys.modules[__name__]
@@ -31,12 +32,12 @@ class DepthLoss(nn.Module):
         diff = pred - gt
         diff = torch.mul(diff, mask)
 
-        v_gradient = torch.abs(diff[0:-2,:] - diff[2:,:])
-        v_mask = torch.mul(mask[0:-2,:], mask[2:,:])
+        v_gradient = torch.abs(diff[:, 0:-2,:] - diff[:, 2:,:])
+        v_mask = torch.mul(mask[:, 0:-2,:], mask[:, 2:,:])
         v_gradient = torch.mul(v_gradient, v_mask)
 
-        h_gradient = torch.abs(diff[:,0:-2] - diff[:,2:])
-        h_mask = torch.mul(mask[:,0:-2], mask[:,2:])
+        h_gradient = torch.abs(diff[:, :,0:-2] - diff[:,:, 2:])
+        h_mask = torch.mul(mask[:,:,0:-2], mask[:,:,2:])
         h_gradient = torch.mul(h_gradient, h_mask)
 
         gradient_loss = torch.sum(h_gradient) + torch.sum(v_gradient)
