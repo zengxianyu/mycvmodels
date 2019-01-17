@@ -6,10 +6,10 @@ from densenet import *
 from resnet import *
 from vgg import *
 from mobilenetv2 import *
+from funcs import *
 
 import numpy as np
 import sys
-from dim_dict import dim_dict
 
 thismodule = sys.modules[__name__]
 import pdb
@@ -103,22 +103,6 @@ procs = {
 }
 
 
-def get_upsampling_weight(in_channels, out_channels, kernel_size):
-    """Make a 2D bilinear kernel suitable for upsampling"""
-    factor = (kernel_size + 1) // 2
-    if kernel_size % 2 == 1:
-        center = factor - 1
-    else:
-        center = factor - 0.5
-    og = np.ogrid[:kernel_size, :kernel_size]
-    filt = (1 - abs(og[0] - center) / factor) * \
-           (1 - abs(og[1] - center) / factor)
-    weight = np.zeros((in_channels, out_channels, kernel_size, kernel_size),
-                      dtype=np.float64)
-    weight[range(in_channels), range(out_channels), :, :] = filt
-    return torch.from_numpy(weight).float()
-
-
 class DeepLab(nn.Module):
     def __init__(self, pretrained=True, c_output=21, base='densenet169'):
         super(DeepLab, self).__init__()
@@ -126,20 +110,10 @@ class DeepLab(nn.Module):
         self.preds = nn.ModuleList([nn.Conv2d(dims[0], c_output, kernel_size=3, dilation=dl, padding=dl)
                                     for dl in [6, 12, 18, 24]])
         self.upscale = nn.ConvTranspose2d(c_output, c_output, 16, 8, 4)
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                m.weight.data.normal_(0.0, 0.02)
-                m.bias.data.fill_(0)
-            if isinstance(m, nn.ConvTranspose2d):
-                assert m.kernel_size[0] == m.kernel_size[1]
-                initial_weight = get_upsampling_weight(
-                    m.in_channels, m.out_channels, m.kernel_size[0])
-                m.weight.data.copy_(initial_weight)
+        self.apply(weight_init)
         self.feature = getattr(thismodule, base)(pretrained=pretrained)
         self.feature = procs[base](self.feature)
-        for m in self.modules():
-            if isinstance(m, nn.BatchNorm2d):
-                m.requires_grad = False
+        self.apply(fraze_bn)
 
     def forward(self, x):
         x = self.feature(x)

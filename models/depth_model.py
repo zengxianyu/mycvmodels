@@ -15,7 +15,6 @@ from datetime import datetime
 from fcn import FCN
 from deeplab import DeepLab
 from unet import UNet
-from simpleconv import SimpConv
 import pdb
 
 thismodule = sys.modules[__name__]

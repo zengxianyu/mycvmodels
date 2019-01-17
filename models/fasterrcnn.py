@@ -10,6 +10,8 @@ from densenet import *
 from resnet import *
 from vgg import *
 
+from funcs import *
+
 import numpy as np
 import sys
 thismodule = sys.modules[__name__]
@@ -27,17 +29,12 @@ class RPN(nn.Module):
         self.input_conv = nn.Conv2d(dims[0], c_hidden, kernel_size=3, padding=1)
         self.output_mask = nn.Conv2d(c_hidden, 18, kernel_size=1)
         self.output_pos = nn.Conv2d(c_hidden, 36, kernel_size=1)
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear) or isinstance(m, nn.Linear):
-                m.weight.data.normal_(0.0, 0.01)
-                m.bias.data.fill_(0)
+        self.apply(weight_init)
 
         self.feature = getattr(thismodule, base)(pretrained=pretrained)
         self.feature.classifier = None
+        self.apply(fraze_bn)
 
-        for m in self.feature.modules():
-            if isinstance(m, nn.BatchNorm2d):
-                m.requires_grad=False
 
     def forward(self, x):
         feat = self.feature(x)
