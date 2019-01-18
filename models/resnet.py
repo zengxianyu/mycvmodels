@@ -161,7 +161,6 @@ def resnet18(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-    model.fc = None
     return model
 
 
@@ -174,7 +173,6 @@ def resnet34(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
-    model.fc = None
     return model
 
 
@@ -187,7 +185,6 @@ def resnet50(pretrained=False, **kwargs):
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
-    model.fc = None
     return model
 
 
@@ -200,7 +197,6 @@ def resnet101(pretrained=False, **kwargs):
     model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet101']))
-    model.fc = None
     return model
 
 
@@ -217,7 +213,6 @@ def cafferesnet152(pretrained=False, **kwargs):
         getattr(model, 'layer%d' % i)[0].conv2.stride = (1, 1)
     if pretrained:
         model.load_state_dict(torch.load('models/resnet152-caffe.pth'))
-    model.fc = None
     return model
 
 
@@ -231,7 +226,6 @@ def resnet152(pretrained=False, **kwargs):
     if pretrained:
         # model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
         model.load_state_dict(torch.load('models/resnet152.pth'))
-    model.fc = None
     return model
 
 

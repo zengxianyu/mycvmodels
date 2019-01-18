@@ -39,8 +39,20 @@ def proc_vgg(model):
     return model
 
 
+def proc_resnet(model):
+    def hook(module, input, output):
+        model.feats[output.device.index] += [output]
+    model.relu.register_forward_hook(hook)
+    model.layer1.register_forward_hook(hook)
+    model.layer2.register_forward_hook(hook)
+    model.layer3.register_forward_hook(hook)
+    model.fc = None
+    return model
+
+
 procs = {'densenet169': proc_densenet,
-         'vgg16': proc_vgg}
+         'vgg16': proc_vgg,
+         'resnet101': proc_resnet}
 
 
 class UNet(nn.Module):
