@@ -84,6 +84,7 @@ class GANModel(_BaseModel):
             fake = self.net_g(noise)
             fake = fake* self.v_std + self.v_mean
         outputs = fake.detach().cpu().numpy() * 255
+        outputs = outputs.transpose((0, 2, 3, 1))
         for ii, msk in enumerate(outputs):
             msk = Image.fromarray(msk.astype(np.uint8))
             msk.save('{}/{}.jpg'.format(self.opt.results_dir, '%d'%ii), 'JPEG')
