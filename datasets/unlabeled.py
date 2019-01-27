@@ -5,7 +5,7 @@ import torch
 from torch.utils import data
 import pdb
 import random
-from base_data import _BaseData
+from .base_data import _BaseData
 
 
 class ImageFiles(_BaseData):
@@ -29,11 +29,11 @@ class ImageFiles(_BaseData):
         img = Image.open(img_file)
         WW, HH = img.size
         if self.crop is not None:
-            img = self.random_crop(img)
+            img, = self.random_crop(img)
         if self.rotate is not None:
-            img = self.random_rotate(img)
+            img, = self.random_rotate(img)
         if self.flip:
-            img = self.random_flip(img)
+            img, = self.random_flip(img)
         img = img.resize((self.size, self.size))
 
         img = np.array(img, dtype=np.float64) / 255.0

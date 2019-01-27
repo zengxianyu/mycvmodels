@@ -13,9 +13,9 @@ import sys
 from evaluate_sal import fm_and_mae
 from tensorboardX import SummaryWriter
 from datetime import datetime
-from fcn import FCN
-from deeplab import DeepLab
-from unet import UNet
+from .fcn import FCN
+from .deeplab import DeepLab
+from .unet import UNet
 import pdb
 
 thismodule = sys.modules[__name__]

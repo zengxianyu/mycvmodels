@@ -8,7 +8,7 @@ import pdb
 import random
 import sys
 import matplotlib.pyplot as plt
-from base_data import _BaseData
+from .base_data import _BaseData
 
 palette = [0, 0, 0, 128, 0, 0, 0, 128, 0, 128, 128, 0, 0, 0, 128, 128, 0, 128, 0, 128, 128,
            128, 128, 128, 64, 0, 0, 192, 0, 0, 64, 128, 0, 192, 128, 0, 64, 0, 128, 192, 0, 128,

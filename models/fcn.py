@@ -6,10 +6,10 @@ from torch.autograd.variable import Variable
 # from .resnet import *
 # from .vgg import *
 
-from densenet import *
-from resnet import *
-from vgg import *
-from funcs import *
+from .densenet import *
+from .resnet import *
+from .vgg import *
+from .funcs import *
 
 import numpy as np
 import sys

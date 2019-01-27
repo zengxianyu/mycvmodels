@@ -6,7 +6,7 @@ from scipy import io
 from torch.utils import data
 import pdb
 import random
-from base_data import _BaseData
+from .base_data import _BaseData
 
 
 class _BaseDepthData(_BaseData):

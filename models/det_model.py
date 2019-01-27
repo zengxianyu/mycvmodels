@@ -6,14 +6,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 from PIL import Image
-from base_model import _BaseModel
+from .base_model import _BaseModel
 import sys
-from fasterrcnn import RPN, ROIHead
+from .fasterrcnn import RPN, ROIHead
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import cupy as cp
 from util import non_maximum_suppression
-from crop_resize import CropResize
+from .crop_resize import CropResize
 import pdb
 
 thismodule = sys.modules[__name__]

@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 from torch.autograd.variable import Variable
 
-from densenet import *
-from resnet import *
-from vgg import *
-from mobilenetv2 import *
-from funcs import *
+from .densenet import *
+from .resnet import *
+from .vgg import *
+from .mobilenetv2 import *
+from .funcs import *
 
 import numpy as np
 import sys

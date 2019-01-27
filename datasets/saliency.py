@@ -5,7 +5,7 @@ import torch
 from torch.utils import data
 import pdb
 import random
-from base_data import _BaseData
+from .base_data import _BaseData
 
 
 class Folder(_BaseData):

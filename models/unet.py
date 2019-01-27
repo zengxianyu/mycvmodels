@@ -6,13 +6,13 @@ from torch.autograd.variable import Variable
 # from .resnet import *
 # from .vgg import *
 
-from densenet import *
-from resnet import *
-from vgg import *
+from .densenet import *
+from .resnet import *
+from .vgg import *
 
 import numpy as np
 import sys
-from funcs import *
+from .funcs import *
 thismodule = sys.modules[__name__]
 import pdb
 
