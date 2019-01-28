@@ -71,7 +71,7 @@ class GANModel(_BaseModel):
         self.input.resize_(input.size()).copy_(input.cuda())
 
 
-    def test(self):
+    def test(self, i):
         with torch.no_grad():
             noise = torch.randn(self.opt.batchSize, self.nz, 1, 1).cuda()
             fake = self.net_g(noise)
@@ -80,7 +80,10 @@ class GANModel(_BaseModel):
         outputs = outputs.transpose((0, 2, 3, 1))
         for ii, msk in enumerate(outputs):
             msk = Image.fromarray(msk.astype(np.uint8))
-            msk.save('{}/{}.jpg'.format(self.opt.results_dir, '%d'%ii), 'JPEG')
+            if i is not None:
+                msk.save('{}/{}_{}.jpg'.format(self.opt.results_dir, i, ii), 'JPEG')
+            else:
+                msk.save('{}/{}.jpg'.format(self.opt.results_dir, ii), 'JPEG')
 
 
     def optimize_parameters_d(self):
