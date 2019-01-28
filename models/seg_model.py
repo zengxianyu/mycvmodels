@@ -3,20 +3,13 @@ import pdb
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torchvision
-import os
 from PIL import Image
-from torch.autograd import Variable
 from .base_model import _BaseModel
 import sys
-from evaluate_sal import fm_and_mae
-from tensorboardX import SummaryWriter
-from datetime import datetime
 from .fcn import FCN
 from .deeplab import DeepLab
 from .unet import UNet
-import pdb
 from datasets.voc import index2color, palette
 
 thismodule = sys.modules[__name__]
