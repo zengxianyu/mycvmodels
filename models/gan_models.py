@@ -43,9 +43,11 @@ class GANModel(_BaseModel):
 
         if opt.phase is 'test':
             pass
-            # print("===========================================LOADING parameters====================================================")
+            #print("===========================================LOADING parameters====================================================")
             # model_parameters = self.load_network(model, 'G', 'best_vanila')
             # model.load_state_dict(model_parameters)
+            #net_g.load_state_dict(torch.load('/home/zhang/segggFiles/pbr-mlt/_99000_net_dcgan_densenet169_g.pth'))
+
         else:
             self.criterion = nn.BCELoss()
             self.optimizer_d = optim.Adam(net_d.parameters(), lr=opt.lr, betas=(0.5, 0.999))
@@ -78,7 +80,7 @@ class GANModel(_BaseModel):
         self.input.resize_(input.size()).copy_(input.cuda())
 
 
-    def test(self):
+    def test(self, i=None):
         with torch.no_grad():
             noise = torch.randn(self.opt.batchSize, self.nz, 1, 1).cuda()
             fake = self.net_g(noise)
@@ -87,7 +89,10 @@ class GANModel(_BaseModel):
         outputs = outputs.transpose((0, 2, 3, 1))
         for ii, msk in enumerate(outputs):
             msk = Image.fromarray(msk.astype(np.uint8))
-            msk.save('{}/{}.jpg'.format(self.opt.results_dir, '%d'%ii), 'JPEG')
+            if i :
+                msk.save('{}/{}_{}.jpg'.format(self.opt.results_dir, i, ii), 'JPEG')
+            else:
+                msk.save('{}/{}.jpg'.format(self.opt.results_dir, ii), 'JPEG')
 
 
     def optimize_parameters_d(self):
