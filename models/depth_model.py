@@ -4,14 +4,10 @@ import torch
 import torch.nn as nn
 import torchvision
 from PIL import Image
-from .base_model import _BaseModel
+from .base_model import BaseModel
 import sys
-from .fcn import FCN
-from .deeplab import DeepLab
-from .unet import UNet
+import networks
 import pdb
-
-thismodule = sys.modules[__name__]
 
 
 class DepthLoss(nn.Module):
@@ -80,13 +76,13 @@ class DepthLoss(nn.Module):
         # return self.data_loss(pred, gt, mask)
 
 
-class DepthModel(_BaseModel):
+class DepthModel(BaseModel):
     def __init__(self, opt):
-        _BaseModel.initialize(self, opt)
+        BaseModel.initialize(self, opt)
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
-        net = getattr(thismodule, opt.model)(pretrained=opt.isTrain and (not opt.from_scratch),
+        net = getattr(networks, opt.model)(pretrained=opt.isTrain and (not opt.from_scratch),
                                                       c_output=1,
                                                       base=opt.base)
         net = torch.nn.parallel.DataParallel(net, device_ids = opt.gpu_ids)

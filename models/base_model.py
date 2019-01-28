@@ -6,9 +6,19 @@ from datetime import datetime
 import pdb
 
 
-class _BaseModel:
-    def __init__(self):
-        pass
+class BaseModel:
+    @staticmethod
+    def modify_commandline_options(parser, is_train):
+        """Add new model-specific options, and rewrite default values for existing options.
+
+        Parameters:
+            parser          -- original option parser
+            is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
+
+        Returns:
+            the modified parser.
+        """
+        return parser
 
     def initialize(self, opt):
         self.opt = opt

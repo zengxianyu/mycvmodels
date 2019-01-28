@@ -5,25 +5,21 @@ import torch
 import torch.nn as nn
 import torchvision
 from PIL import Image
-from .base_model import _BaseModel
+from .base_model import BaseModel
 import sys
-from .fcn import FCN
-from .deeplab import DeepLab
-from .unet import UNet
+import networks
 from datasets.voc import index2color, palette
 
-thismodule = sys.modules[__name__]
 
-
-class SegModel(_BaseModel):
+class SegModel(BaseModel):
     def __init__(self, opt, c_output, ignored_idx):
-        _BaseModel.initialize(self, opt)
+        BaseModel.initialize(self, opt)
         self.name = opt.model + '_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
         _pretrained = opt.isTrain and (not opt.from_scratch)
         print('pretrained={}'.format(_pretrained))
-        net = getattr(thismodule, opt.model)(pretrained=_pretrained,
+        net = getattr(networks, opt.model)(pretrained=_pretrained,
                                                       c_output=c_output,
                                                       base=opt.base)
 

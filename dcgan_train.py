@@ -7,7 +7,9 @@ import torch.backends.cudnn as cudnn
 from datasets import ImageFiles
 from models import GANModel
 from options.train_options import TrainOptions
-opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
+opt = TrainOptions()  # set CUDA_VISIBLE_DEVICES before import torch
+opt.parser.set_defaults(name='dcgan')
+opt = opt.parse()
 
 
 opt.manualSeed = random.randint(1, 10000)

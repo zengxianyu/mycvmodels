@@ -6,7 +6,8 @@ from .densenet import *
 from .resnet import *
 from .vgg import *
 from .mobilenetv2 import *
-from .funcs import *
+from ..tools import *
+from .base_network import BaseNetwork
 
 import numpy as np
 import sys
@@ -103,7 +104,7 @@ procs = {
 }
 
 
-class DeepLab(nn.Module):
+class DeepLab(nn.Module, BaseNetwork):
     def __init__(self, pretrained=True, c_output=21, base='densenet169'):
         super(DeepLab, self).__init__()
         dims = dim_dict[base][::-1]

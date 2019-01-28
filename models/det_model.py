@@ -4,17 +4,15 @@ import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .base_model import _BaseModel
-import sys
-from .fasterrcnn import RPN, ROIHead
+from .base_model import BaseModel
+from .networks import RPN, ROIHead
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import cupy as cp
 from util import non_maximum_suppression
-from .crop_resize import CropResize
+from .tools import CropResize
 import pdb
 
-thismodule = sys.modules[__name__]
 plt.switch_backend('agg')
 
 
@@ -309,12 +307,13 @@ class HeadLoss(nn.Module):
         return loss
 
 
-class DetModel(_BaseModel):
+class DetModel(BaseModel):
     fig, ax = plt.subplots(1)
     plt.ion()
 
+
     def __init__(self, opt, n_classes=20):
-        _BaseModel.initialize(self, opt)
+        BaseModel.initialize(self, opt)
         self.name = opt.model + '_' + opt.base
         self.phase = opt.phase
         self.imageSize = opt.imageSize

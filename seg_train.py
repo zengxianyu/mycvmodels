@@ -13,7 +13,9 @@ import os
 
 
 from options.train_options import TrainOptions
-opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
+opt = TrainOptions()  # set CUDA_VISIBLE_DEVICES before import torch
+opt.parser.set_defaults(name='seg')
+opt = opt.parse()
 
 home = os.path.expanduser("~")
 

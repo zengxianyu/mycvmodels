@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 from functools import reduce
+from .base_network import BaseNetwork
 import pdb
 
 
@@ -175,7 +176,7 @@ class Vec2Img(nn.Module):
         return x
 
 
-class SegNet(nn.Module):
+class SegNet(nn.Module, BaseNetwork):
     def __init__(self, pretrain=False, c_input=3, c_output=21):
         super(SegNet, self).__init__()
         self.img2vec = Img2Vec(pretrained=pretrain, c_input=c_input)

@@ -10,21 +10,20 @@ from .densenet import *
 from .resnet import *
 from .vgg import *
 
-from .funcs import *
+from ..tools import *
+from .base_network import BaseNetwork
 
 import numpy as np
 import sys
 thismodule = sys.modules[__name__]
 import pdb
 
-dim_dict = {
-    'vgg16': [64, 128, 256, 512, 512],
-}
 
-
-class RPN(nn.Module):
+class RPN(nn.Module, BaseNetwork):
     def __init__(self, pretrained=True, base='vgg16', c_hidden=512):
         super(RPN, self).__init__()
+        if not (base == 'vgg16'):
+            raise NotImplementedError
         dims = dim_dict[base][::-1]
         self.input_conv = nn.Conv2d(dims[0], c_hidden, kernel_size=3, padding=1)
         self.output_mask = nn.Conv2d(c_hidden, 18, kernel_size=1)
@@ -45,7 +44,7 @@ class RPN(nn.Module):
         return (pred_mask.view(bsize, 2, 9, fsize, fsize), pred_pos.view(bsize, 4, 9, fsize, fsize)), feat
 
 
-class ROIHead(nn.Module):
+class ROIHead(nn.Module, BaseNetwork):
     def __init__(self, pretrained=True, base='vgg16', n_classes=20):
         super(ROIHead, self).__init__()
         self.fc_cls = nn.Linear(4096, n_classes+1)

@@ -1,4 +1,5 @@
 import torch.nn as nn
+from .base_network import BaseNetwork
 
 
 # custom weights initialization called on netG and netD
@@ -11,7 +12,7 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-class Generator(nn.Module):
+class Generator(nn.Module, BaseNetwork):
     def __init__(self, ngpu, nz, ngf, nc):
         super(Generator, self).__init__()
         self.ngpu = ngpu

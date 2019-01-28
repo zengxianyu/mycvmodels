@@ -5,17 +5,17 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 from PIL import Image
-from .base_model import _BaseModel
+from .base_model import BaseModel
 import sys
-from .dcgan import Generator, Discriminator
+from .networks import Generator, Discriminator
 import pdb
 
 thismodule = sys.modules[__name__]
 
 
-class GANModel(_BaseModel):
+class GANModel(BaseModel):
     def __init__(self, opt, nz, ngf, ndf):
-        _BaseModel.initialize(self, opt)
+        BaseModel.initialize(self, opt)
         self.name = 'dcgan_' + opt.base
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
