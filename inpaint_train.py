@@ -8,7 +8,6 @@ import numpy as np
 from tqdm import tqdm
 from models import InpaintModel
 from datasets import ImageNetMask
-from evaluate_inpaint import compute_psnr
 import json
 import os
 
