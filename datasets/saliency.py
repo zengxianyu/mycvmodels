@@ -11,14 +11,13 @@ from .base_data import _BaseData
 class Folder(_BaseData):
     def __init__(self, img_dir, gt_dir, img_format='jpg', gt_format='png', size=256, training=True,
                  crop=None, rotate=None, flip=False, mean=None, std=None):
-        super(Folder, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
+        super(Folder, self).__init__(size=size, crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
         names1 = ['.'.join(name.split('.')[:-1]) for name in os.listdir(gt_dir)]
         names2 = ['.'.join(name.split('.')[:-1]) for name in os.listdir(img_dir)]
         names = list(set(names1)&set(names2))
         self.img_filenames = [os.path.join(img_dir, name+'.'+img_format) for name in names]
         self.gt_filenames = [os.path.join(gt_dir, name+'.'+gt_format) for name in names]
         self.names = names
-        self.size = size
         self.training = training
 
     def __len__(self):
@@ -39,8 +38,8 @@ class Folder(_BaseData):
             img, gt = self.random_rotate(img, gt)
         if self.flip:
             img, gt = self.random_flip(img, gt)
-        img = img.resize((self.size, self.size))
-        gt = gt.resize((self.size, self.size))
+        img = img.resize(self.size)
+        gt = gt.resize(self.size)
 
         img = np.array(img, dtype=np.float64) / 255.0
         gt = np.array(gt, dtype=np.uint8)

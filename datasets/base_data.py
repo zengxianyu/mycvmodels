@@ -1,9 +1,6 @@
-import os
 import numpy as np
 import PIL.Image as Image
-import torch
 from torch.utils import data
-import pdb
 import random
 
 
@@ -36,13 +33,33 @@ def rotated_rect_with_max_area(w, h, angle):
 
 
 class _BaseData(data.Dataset):
-    def __init__(self, crop=None, rotate=None, flip=False,
+    def __init__(self, size=256, crop=None, rotate=None, flip=False,
                  mean=None, std=None):
         super(_BaseData, self).__init__()
         self.mean, self.std = mean, std
         self.flip = flip
         self.rotate = rotate
         self.crop = crop
+        if isinstance(size, tuple):
+            self.size = size
+        elif isinstance(size, int):
+            self.size = (size, size)
+        else:
+            raise NotImplementedError
+
+    def patch_crop(self, *images):
+        images = list(images)
+        sz = [img.size for img in images]
+        sz = set(sz)
+        assert(len(sz)==1)
+        w, h = sz.pop()
+        th, tw = self.size
+        if w == tw and h == th:
+            return tuple(images)
+        i = random.randint(0, h - th)
+        j = random.randint(0, w - tw)
+        results = [img.crop((j, i, j + tw, i + th)) for img in images]
+        return tuple(results)
 
     def random_crop(self, *images):
         images = list(images)

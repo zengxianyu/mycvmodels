@@ -39,11 +39,11 @@ class SalModel(BaseModel):
                                                 lr=opt.lr)
 
     def save(self, label):
-        self.save_network(self.net, self.name, label, self.gpu_ids)
+        self.save_network(self.net, self.name, label)
 
     def load(self, label):
         print('loading %s'%label)
-        self.load_network(self.net, self.name, label, self.gpu_ids)
+        self.load_network(self.net, self.name, label)
 
     def show_tensorboard_eval(self, num_iter):
         for k, v in self.performance.items():
@@ -87,9 +87,9 @@ class SalModel(BaseModel):
 
     def backward(self):
         # Combined loss
-        self.loss_var = self.criterion(self.prediction, self.targets)
-        self.loss_var.backward()
-        self.loss = self.loss_var.data[0]
+        loss_var = self.criterion(self.prediction, self.targets)
+        loss_var.backward()
+        self.loss = loss_var.item()
 
 
     def optimize_parameters(self):

@@ -5,8 +5,8 @@ import os
 
 class TrainOptions(_BaseOptions):
 
-    def initialize(self):
-        _BaseOptions.initialize(self)
+    def __init__(self):
+        super(TrainOptions, self).__init__()
 
         self.parser.add_argument('--start_it', type=int, default=0, help='recover from saved')
         self.parser.add_argument('--display_freq', type=int, default=100, help='frequency of showing training results on screen')
@@ -15,7 +15,8 @@ class TrainOptions(_BaseOptions):
         self.parser.add_argument('--train_iters', type=int, default=100000, help='training iterations')
         self.parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
         self.parser.add_argument('--lr', type=float, default=1e-4, help='initial learning rate for adam')
+        self.parser.add_argument('--beta1', type=float, default=0.0, help='initial learning rate for adam')
+        self.parser.add_argument('--beta2', type=float, default=0.9, help='initial learning rate for adam')
         self.parser.add_argument('--from_scratch', action='store_true')
-        self.initialized = True
 
         self.isTrain = True

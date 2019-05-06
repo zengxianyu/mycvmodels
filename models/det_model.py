@@ -323,6 +323,8 @@ class DetModel(BaseModel):
         self.n_post_nms_test = 300
         self.nms_th = 0.7
 
+        self.loss = {}
+
         self.v_mean = self.Tensor(opt.mean)[None, ..., None, None]
         self.v_std = self.Tensor(opt.std)[None, ..., None, None]
         rpn = RPN(pretrained=opt.isTrain and (not opt.from_scratch),
@@ -362,13 +364,13 @@ class DetModel(BaseModel):
         return buf
 
     def save(self, label):
-        self.save_network(self.rpn, self.name+'_rpn', label, self.gpu_ids)
-        self.save_network(self.head, self.name+'_head', label, self.gpu_ids)
+        self.save_network(self.rpn, self.name+'_rpn', label)
+        self.save_network(self.head, self.name+'_head', label)
 
     def load(self, label):
         print('loading %s'%label)
-        self.load_network(self.rpn, self.name+'_rpn', label, self.gpu_ids)
-        self.load_network(self.head, self.name+'_head', label, self.gpu_ids)
+        self.load_network(self.rpn, self.name+'_rpn', label)
+        self.load_network(self.head, self.name+'_head', label)
 
     def rpnpred2roi(self):
         if self.phase is 'train':
@@ -414,8 +416,8 @@ class DetModel(BaseModel):
             self.writer.add_scalar(k, v, num_iter)
 
     def show_tensorboard(self, num_iter, num_show=4):
-        self.writer.add_scalar('rpn loss', self.loss_rpn, num_iter)
-        self.writer.add_scalar('head loss', self.loss_head, num_iter)
+        for k, v in self.loss.items():
+            self.writer.add_scalar(k, v, num_iter)
         pred_box = self.rpnpred2roi()
         pred_box = pred_box[:10]
 
@@ -472,11 +474,11 @@ class DetModel(BaseModel):
         # Combined loss
         loss_var_rpn = self.criterion_rpn(self.rpn_prediction, self.gt_box)
         loss_var_head = self.criterion_head(self.head_prediction, self.gt_box, self.roi_box, self.labels, dbg)
-        self.loss_var = loss_var_rpn + loss_var_head
+        loss_var = loss_var_rpn + loss_var_head
 
-        self.loss_var.backward()
-        self.loss_rpn = loss_var_rpn.data[0]
-        self.loss_head = loss_var_head.data[0]
+        loss_var.backward()
+        self.loss['rpn'] = loss_var_rpn.item()
+        self.loss['head'] = loss_var_head.item()
         # self.loss_head = loss_var_rpn.data[0]
 
 

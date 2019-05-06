@@ -12,8 +12,7 @@ from .base_data import _BaseData
 class _BaseDepthData(_BaseData):
     def __init__(self, size=256, training=True,
                  crop=None, rotate=None, flip=False, mean=None, std=None):
-        super(_BaseDepthData, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
-        self.size = size
+        super(_BaseDepthData, self).__init__(size=size, crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
         self.training = training
 
     def __len__(self):
@@ -38,8 +37,8 @@ class _BaseDepthData(_BaseData):
             img, gt = self.random_rotate(img, gt)
         if self.flip:
             img, gt = self.random_flip(img, gt)
-        img = img.resize((self.size, self.size))
-        gt = gt.resize((self.size, self.size))
+        img = img.resize(self.size)
+        gt = gt.resize(self.size)
 
         img = np.array(img, dtype=np.float64) / 255.0
         gt = np.array(gt, dtype=np.float64)

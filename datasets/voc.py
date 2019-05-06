@@ -55,10 +55,9 @@ class _BaseVOC(_BaseData):
     #     super(BaseVOC, self).__init__()
     def __init__(self, img_dir, gt_dir, split_file, img_format='jpg', gt_format='png', size=256, training=True,
                  crop=None, rotate=None, flip=False, mean=None, std=None):
-        super(_BaseVOC, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
+        super(_BaseVOC, self).__init__(crop=crop, size=size, rotate=rotate, flip=flip, mean=mean, std=std)
         self.ignored_idx = -1
         self.training = training
-        self.size = size
         self.mean, self.std = mean, std
         with open(split_file, 'r') as f:
             names = f.read().split('\n')[:-1]
@@ -97,8 +96,8 @@ class VOC(_BaseVOC):
             img, gt = self.random_rotate(img, gt)
         if self.flip:
             img, gt = self.random_flip(img, gt)
-        img = img.resize((self.size, self.size))
-        gt = gt.resize((self.size, self.size))
+        img = img.resize(self.size)
+        gt = gt.resize(self.size)
 
         img = np.array(img, dtype=np.float64) / 255.0
         if len(img.shape) < 3:

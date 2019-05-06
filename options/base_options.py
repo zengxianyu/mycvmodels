@@ -2,14 +2,12 @@ import argparse
 import os
 
 
-class _BaseOptions:
+class _BaseOptions(object):
     def __init__(self):
         self.parser = argparse.ArgumentParser()
-        self.initialized = False
         self.mean = [0.485, 0.456, 0.406]
         self.std = [0.229, 0.224, 0.225]
 
-    def initialize(self):
         # self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         self.parser.add_argument('--batchSize', type=int, default=80, help='input batch size')
         self.parser.add_argument('--imageSize', type=int, default=256, help='input image size')
@@ -26,8 +24,7 @@ class _BaseOptions:
 
 
     def parse(self):
-        if not self.initialized:
-            self.initialize()
+
         self.opt = self.parser.parse_args()
         self.opt.isTrain = self.isTrain   # train or test
         self.opt.mean = self.mean

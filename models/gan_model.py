@@ -45,13 +45,13 @@ class GANModel(BaseModel):
             self.optimizer_g = optim.Adam(net_g.parameters(), lr=opt.lr, betas=(0.5, 0.999))
 
     def save(self, label):
-        self.save_network(self.net_g, self.name+'_g', label, self.gpu_ids)
-        self.save_network(self.net_d, self.name+'_d', label, self.gpu_ids)
+        self.save_network(self.net_g, self.name+'_g', label)
+        self.save_network(self.net_d, self.name+'_d', label)
 
     def load(self, label):
         print('loading %s'%label)
-        self.load_network(self.net_g, self.name+'_g', label, self.gpu_ids)
-        self.load_network(self.net_d, self.name+'_d', label, self.gpu_ids)
+        self.load_network(self.net_g, self.name+'_g', label)
+        self.load_network(self.net_d, self.name+'_d', label)
 
     def show_tensorboard(self, num_iter, num_show=4):
         self.writer.add_scalar('errD', self.errD, num_iter)

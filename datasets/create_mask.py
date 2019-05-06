@@ -1,0 +1,60 @@
+import cv2
+import numpy as np
+import random
+from PIL import Image
+import pdb
+
+
+def rectangle_mask(image_height=256, image_width=256, min_hole_size=10, max_hole_size=128):
+    mask = np.zeros((image_height, image_width))
+    hole_size = random.randint(min_hole_size, max_hole_size)
+    x = random.randint(0, image_width-hole_size-1)
+    y = random.randint(0, image_height-hole_size-1)
+    mask[x:x+hole_size, y:y+hole_size] = 1
+    return mask
+
+
+def stroke_mask(image_height=256, image_width=256, max_vertex=20, max_mask=5):
+    max_angle = np.pi
+    max_length = min(image_height, image_width)*0.5
+    max_brush_width = max(1, int(min(image_height, image_width)*0.05))
+    min_brush_width = max(1, int(min(image_height, image_width)*0.005))
+
+    mask = np.zeros((image_height, image_width))
+    for k in range(random.randint(1, max_mask)):
+        num_vertex = random.randint(1, max_vertex)
+        start_x = random.randint(0, image_width-1)
+        start_y = random.randint(0, image_height-1)
+        for i in range(num_vertex):
+            angle = random.uniform(0, max_angle)
+            if i % 2 == 0:
+                angle = 2*np.pi - angle
+            length = random.uniform(0, max_length)
+            brush_width = random.randint(min_brush_width, max_brush_width)
+            end_x = min(int(start_x + length * np.cos(angle)), image_width)
+            end_y = min(int(start_y + length * np.sin(angle)), image_height)
+            mask = cv2.line(mask, (start_x, start_y), (end_x, end_y), color=1, thickness=brush_width)
+            start_x, start_y = end_x, end_y
+            mask = cv2.circle(mask, (start_x, start_y), brush_width/2, 1)
+        if random.randint(0, 1):
+            mask = mask[:, ::-1].copy()
+        if random.randint(0, 1):
+            mask = mask[::-1, :].copy()
+    return mask
+
+
+if __name__ == "__main__":
+    import os
+    from tqdm import tqdm
+    input_dir = '/home/zeng/data/datasets/ILSVRC12_image_val'
+    output_dir = '/home/zeng/gitmodel/mycvmodels/imagenet_mask'
+    # os.mkdir(output_dir)
+    names = os.listdir(input_dir)
+    for name in tqdm(names):
+        img = Image.open('{}/{}'.format(input_dir, name))
+        w, h = img.size
+        max_hole = min(w/2, h/2, 128)
+        mask = stroke_mask(h, w) if random.randint(0, 1) else rectangle_mask(h, w, max_hole_size=max_hole)
+        mask = (mask*255).astype(np.uint8)
+        mask = Image.fromarray(mask)
+        mask.save('%s/%s.png'%(output_dir, '.'.join(name.split('.')[:-1])))

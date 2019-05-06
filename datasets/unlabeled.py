@@ -9,11 +9,10 @@ from .base_data import _BaseData
 
 
 class ImageFiles(_BaseData):
-    def __init__(self, img_dir, size=256, trining=True,
+    def __init__(self, img_dir, size=256, training=True,
                  crop=None, rotate=None, flip=False, mean=None, std=None):
-        super(ImageFiles, self).__init__(crop=crop, rotate=rotate, flip=flip, mean=mean, std=std)
-        self.size = size
-        self.training = trining
+        super(ImageFiles, self).__init__(crop=crop, size=size, rotate=rotate, flip=flip, mean=mean, std=std)
+        self.training = training
         names = os.listdir(img_dir)
         self.img_filenames = list(map(lambda x: os.path.join(img_dir, x), names))
         names = list(map(lambda x: '.'.join(x.split('.')[:-1]), names))
@@ -34,7 +33,7 @@ class ImageFiles(_BaseData):
             img, = self.random_rotate(img)
         if self.flip:
             img, = self.random_flip(img)
-        img = img.resize((self.size, self.size))
+        img = img.resize(self.size)
 
         img = np.array(img, dtype=np.float64) / 255.0
         if len(img.shape) < 3:
