@@ -4,7 +4,9 @@ from .fasterrcnn import ROIHead, RPN
 from .fcn import FCN
 from .segnet import SegNet
 from .unet import UNet
-from .edgeconnect import InpaintGenerator, InpaintDiscriminator
+from . import contextattention
+from . import selfattention
+from . import woattention
 
 import importlib
 

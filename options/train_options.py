@@ -15,8 +15,9 @@ class TrainOptions(_BaseOptions):
         self.parser.add_argument('--train_iters', type=int, default=100000, help='training iterations')
         self.parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
         self.parser.add_argument('--lr', type=float, default=1e-4, help='initial learning rate for adam')
-        self.parser.add_argument('--beta1', type=float, default=0.0, help='initial learning rate for adam')
-        self.parser.add_argument('--beta2', type=float, default=0.9, help='initial learning rate for adam')
+        self.parser.add_argument('--beta1', type=float, default=0.5, help='initial learning rate for adam')
+        self.parser.add_argument('--beta2', type=float, default=0.999, help='initial learning rate for adam')
+        self.parser.add_argument('--d_repeat', type=int, default=5, help='initial learning rate for adam')
         self.parser.add_argument('--from_scratch', action='store_true')
 
         self.isTrain = True

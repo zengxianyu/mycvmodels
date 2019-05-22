@@ -6,7 +6,7 @@ import torchvision
 from PIL import Image
 from .base_model import BaseModel
 import sys
-import networks
+from . import networks
 import pdb
 
 

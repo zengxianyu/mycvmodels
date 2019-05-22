@@ -10,6 +10,12 @@ dim_dict = {
     'resnet101': [64, 256, 512, 1024, 2048]
 }
 
+def spectral_norm(module, mode=True):
+    if mode:
+        return nn.utils.spectral_norm(module)
+
+    return module
+
 
 def get_upsampling_weight(in_channels, out_channels, kernel_size):
     """Make a 2D bilinear kernel suitable for upsampling"""
@@ -29,8 +35,9 @@ def get_upsampling_weight(in_channels, out_channels, kernel_size):
 
 def weight_init(m):
     if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear) or isinstance(m, nn.Linear):
-        m.weight.data.normal_(0.0, 0.01)
-        m.bias.data.fill_(0)
+        m.weight.data.normal_(0.0, 0.02)
+        if m.bias is not None:
+            m.bias.data.fill_(0)
     elif isinstance(m, nn.ConvTranspose2d) and m.in_channels == m.out_channels:
         initial_weight = get_upsampling_weight(
             m.in_channels, m.out_channels, m.kernel_size[0])

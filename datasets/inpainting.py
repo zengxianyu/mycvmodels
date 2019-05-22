@@ -3,9 +3,10 @@ import numpy as np
 import PIL.Image as Image
 import torch
 import pdb
-from base_data import _BaseData
-from create_mask import rectangle_mask, stroke_mask
+from .base_data import _BaseData
+from .create_mask import rectangle_mask, stroke_mask
 import random
+import math
 
 
 class ImageNetMask(_BaseData):
@@ -35,18 +36,21 @@ class ImageNetMask(_BaseData):
         w, h = img.size
         WW, HH = w, h
         th, tw = self.size
-        if w < tw:
-            img = img.resize((tw, int(float(tw)/w * h)))
-        w, h = img.size
-        if h < th:
-            img = img.resize((int(float(th)/h * w), th))
+        rate = float(max(th, tw)) / min(h, w)
+        img = img.resize((int(math.ceil(w*rate)), int(math.ceil(h*rate))))
+        # if w < tw:
+        #     img = img.resize((tw, int(float(tw)/w * h)))
+        # w, h = img.size
+        # if h < th:
+        #     img = img.resize((int(float(th)/h * w), th))
         if self.crop is not None:
             img, = self.random_crop(img)
         if self.rotate is not None:
             img, = self.random_rotate(img)
         if self.training:
             img, = self.patch_crop(img)
-            mask = stroke_mask(self.size[0], self.size[1]) if random.randint(0, 1) else rectangle_mask(self.size[0], self.size[1])
+            mask = stroke_mask(self.size[0], self.size[1]) if random.randint(0, 1) \
+                else rectangle_mask(self.size[0], self.size[1], max_hole_size=self.size[0]/2, min_hole_size=self.size[0]/4)
         else:
             mask = Image.open(self.mask_filenames[index])
             img = img.resize(self.size)

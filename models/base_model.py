@@ -31,8 +31,15 @@ class BaseModel:
         # tensorboard
         if not os.path.exists(self.save_dir+'/runs'):
             os.mkdir(self.save_dir+'/runs')
-        os.system('rm -rf %s/runs/*'%self.save_dir)
-        self.writer = SummaryWriter('%s/runs/'%self.save_dir + datetime.now().strftime('%Y%m%d_%H:%M:%S'))
+            self.writer = SummaryWriter('%s/runs/'%self.save_dir + datetime.now().strftime('%Y%m%d_%H:%M:%S'))
+        elif len(os.listdir(self.save_dir + '/runs')) == 0:
+            self.writer = SummaryWriter('%s/runs/'%self.save_dir + datetime.now().strftime('%Y%m%d_%H:%M:%S'))
+        elif opt.isTrain and opt.start_it == 0:
+            os.system('rm -rf {}/runs/*'.format(self.save_dir))
+            self.writer = SummaryWriter('%s/runs/'%self.save_dir + datetime.now().strftime('%Y%m%d_%H:%M:%S'))
+        else:
+            dir_exist = os.listdir(self.save_dir + '/runs')[0]
+            self.writer = SummaryWriter('{}/runs/{}'.format(self.save_dir, dir_exist))
 
     # def set_input(self, input):
     #     self.input = input

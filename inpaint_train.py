@@ -14,25 +14,24 @@ import os
 
 from options.train_options import TrainOptions
 opt = TrainOptions()  # set CUDA_VISIBLE_DEVICES before import torch
-opt.parser.set_defaults(name='inpaint')
+# opt.parser.set_defaults(name='inpaint_adv_cta')
 opt = opt.parse()
 
 
 home = os.path.expanduser("~")
 
-train_img_dir = '%s/data/datasets/ILSVRC12_image_train'%home
-val_img_dir = '%s/data/datasets/ILSVRC12_image_val'%home
-val_mask_dir = '%s/gitmodel/mycvmodels/imagenet_mask'%home
+train_img_dir = '%s/data/datasets/imagenet10train'%home
+val_img_dir = '%s/data/datasets/imagenet10val'%home
+val_mask_dir = '%s/data/datasets/imagenet10mask'%home
 
 
 train_loader = torch.utils.data.DataLoader(
-    ImageNetMask(train_img_dir, size=256, training=True,
+    ImageNetMask(train_img_dir, size=opt.imageSize, training=True,
                  crop=None, rotate=None, flip=True),
     batch_size=opt.batchSize, shuffle=True, num_workers=4, pin_memory=True)
-# train_loader.dataset.__getitem__(0)
 
 val_loader = torch.utils.data.DataLoader(
-    ImageNetMask(val_img_dir, mask_root=val_mask_dir, size=(680, 512), training=False,
+    ImageNetMask(val_img_dir, mask_root=val_mask_dir, size=(168, 128), training=False,
                  crop=None, rotate=None, flip=False),
     batch_size=opt.batchSize, shuffle=True, num_workers=4, pin_memory=True)
 
@@ -46,8 +45,8 @@ def test(model):
         batch += img.size(0)
         psnr += model.test(img, msk, name, WW, HH)
     model.switch_to_train()
-    # psnr = compute_psnr(opt.results_dir, val_img_dir, val_mask_dir)
-    model.performance = {'psnr': psnr / batch}
+    psnr /= batch
+    model.performance = {'psnr': psnr}
     return psnr
 
 
@@ -57,12 +56,14 @@ model = InpaintModel(opt)
 def train(model):
     print("============================= TRAIN ============================")
     model.switch_to_train()
+    if opt.start_it > 0:
+        model.load(str(opt.start_it))
 
     train_iter = iter(train_loader)
     it = 0
     log = {'best': 0, 'best_it': 0}
 
-    for i in tqdm(range(opt.train_iters), desc='train'):
+    for i in tqdm(range(opt.start_it, opt.train_iters), desc='train'):
         if it >= len(train_loader):
             train_iter = iter(train_loader)
             it = 0
@@ -70,7 +71,7 @@ def train(model):
         it += 1
 
         model.set_input(image, mask)
-        model.optimize_parameters()
+        model.optimize_parameters(i)
 
         if i % opt.display_freq == 0:
             model.show_tensorboard(i)
@@ -80,11 +81,11 @@ def train(model):
             psnr = test(model)
             model.show_tensorboard_eval(i)
             log[i] = {'psnr': psnr}
-            # if psnr > log['best']:
-            #     log['best'] = psnr
-            #     log['best_it'] = i
-            #     model.save('best')
-            print(u'最大psnr: %.4f, 这次psnr: %.4f'%(log['best'], psnr))
+            if psnr > log['best']:
+                log['best'] = psnr
+                log['best_it'] = i
+                model.save('best')
+            print(u'最大psnr: %d的%.4f, 这次psnr: %.4f'%(i, log['best'], psnr))
             with open(model.save_dir+'/'+'train-log.json', 'w') as outfile:
                 json.dump(log, outfile)
 
