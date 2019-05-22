@@ -1,17 +1,8 @@
 ## 代码
-saliency, semantic seg, depth, obj det
+saliency, semantic seg, depth, obj det, inpaint
 
-模型：fcn, deeplab, unet, segnet, faster rcnn 
+模型：fcn, deeplab, unet, segnet, faster rcnn, self attention, context attention
 
-### 用法
-1. 修改相应文件比如train.py和xx_options.py
-2. 运行```train.py```
-
-
-hehe
-haha
-
-hhh
 
 
 
